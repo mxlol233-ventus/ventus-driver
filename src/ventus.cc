@@ -27,7 +27,7 @@
 
 int vt_set_device(vt_device_h* hdevice) {
   if (hdevice == nullptr) {
-    VZ_ERROR("vz::api", "input not valid");
+    VT_ERROR("vz::api", "input not valid");
     return -1;
   }
   *hdevice = new vt::Driver();
@@ -37,7 +37,7 @@ int vt_set_device(vt_device_h* hdevice) {
 
 int vt_release(vt_device_h* hdevice) {
   if (hdevice == nullptr) {
-    VZ_ERROR("vz::api", "input not valid");
+    VT_ERROR("vz::api", "input not valid");
     return -1;
   }
   auto* device = (vt::Driver*)hdevice;
@@ -47,7 +47,7 @@ int vt_release(vt_device_h* hdevice) {
 
 int vt_dev_caps(vt_device_h* hdevice, uint64_t caps_id, uint64_t* value) {
   if (hdevice == nullptr) {
-    VZ_ERROR("vz::api", "input not valid");
+    VT_ERROR("vz::api", "input not valid");
     return -1;
   }
   switch (caps_id) {
@@ -64,7 +64,7 @@ int vt_dev_caps(vt_device_h* hdevice, uint64_t caps_id, uint64_t* value) {
       *value = vt::NUM_THREAD;
       break;
     default:
-      VZ_ERROR("vz::api", "input not valid");
+      VT_ERROR("vz::api", "input not valid");
       return -1;
   }
 
@@ -73,7 +73,7 @@ int vt_dev_caps(vt_device_h* hdevice, uint64_t caps_id, uint64_t* value) {
 
 int vt_root_mem_alloc(vt_device_h hdevice, int taskID) {
   if (hdevice == nullptr) {
-    VZ_ERROR("vz::api", "input not valid");
+    VT_ERROR("vz::api", "input not valid");
     return -1;
   }
   return ((vt::Driver*)hdevice)->create_device_mem(taskID);
@@ -81,7 +81,7 @@ int vt_root_mem_alloc(vt_device_h hdevice, int taskID) {
 
 int vt_root_mem_free(vt_device_h hdevice, int taskID) {
   if (hdevice == nullptr) {
-    VZ_ERROR("vz::api", "input not valid");
+    VT_ERROR("vz::api", "input not valid");
     return -1;
   }
   return ((vt::Driver*)hdevice)->delete_device_mem(taskID);
@@ -90,7 +90,7 @@ int vt_root_mem_free(vt_device_h hdevice, int taskID) {
 int vt_malloc(vt_device_h hdevice, uint64_t size, uint64_t* vaddr, int BUF_TYPE,
               uint64_t taskID, uint64_t kernelID) {
   if (size <= 0 || hdevice == nullptr) {
-    VZ_ERROR("vz::api", "input not valid");
+    VT_ERROR("vz::api", "input not valid");
     return -1;
   }
   return ((vt::Driver*)hdevice)
@@ -101,7 +101,7 @@ int vt_malloc(vt_device_h hdevice, uint64_t size, uint64_t* vaddr, int BUF_TYPE,
 int vt_free(vt_device_h hdevice, uint64_t size, uint64_t* vaddr,
             uint64_t taskID, uint64_t kernelID) {
   if (size <= 0 || hdevice == nullptr) {
-    VZ_ERROR("vz::api", "input not valid");
+    VT_ERROR("vz::api", "input not valid");
     return -1;
   }
   return ((vt::Driver*)hdevice)->free_local_mem(size, vaddr, taskID, kernelID);
@@ -111,7 +111,7 @@ static int vt_copy_to_dev(vt_device_h hdevice, uint64_t dev_vaddr,
                           uint64_t src_addr, uint64_t size, uint64_t taskID,
                           uint64_t kernelID) {
   if (size <= 0 || hdevice == nullptr) {
-    VZ_ERROR("vz::api", "input not valid");
+    VT_ERROR("vz::api", "input not valid");
     return -1;
   }
   return ((vt::Driver*)hdevice)
@@ -122,7 +122,7 @@ static int vt_copy_from_dev(vt_device_h hdevice, uint64_t dev_vaddr,
                             uint64_t dst_addr, uint64_t size, uint64_t taskID,
                             uint64_t kernelID) {
   if (size <= 0 || hdevice == nullptr) {
-    VZ_ERROR("vz::api", "input not valid");
+    VT_ERROR("vz::api", "input not valid");
     return -1;
   }
   return ((vt::Driver*)hdevice)
@@ -142,7 +142,7 @@ int vt_memcopy(vt_device_h hdevice, uint64_t dst_addr, uint64_t src_addr,
       break;
     }
     default: {
-      VZ_ERROR("vz::api", "input not valid");
+      VT_ERROR("vz::api", "input not valid");
       return -1;
     }
   }
@@ -152,7 +152,7 @@ int vt_memcopy(vt_device_h hdevice, uint64_t dst_addr, uint64_t src_addr,
 
 int vt_start(vt_device_h hdevice, void* metaData, uint64_t taskID) {
   if (hdevice == nullptr) {
-    VZ_ERROR("vz::api", "input not valid");
+    VT_ERROR("vz::api", "input not valid");
     return -1;
   }
   ((vt::Driver*)hdevice)->start(taskID, metaData);
@@ -161,7 +161,7 @@ int vt_start(vt_device_h hdevice, void* metaData, uint64_t taskID) {
 
 int vt_ready_wait(vt_device_h hdevice, uint64_t timeout) {
   if (hdevice == nullptr) {
-    VZ_ERROR("vz::api", "input not valid");
+    VT_ERROR("vz::api", "input not valid");
     return -1;
   }
   ((vt::Driver*)hdevice)->wait(timeout);

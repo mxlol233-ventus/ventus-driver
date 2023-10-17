@@ -128,7 +128,7 @@ class Manager {
   void createNewContext(uint64_t contextID) {
     for (auto it : m_cxt_mem_) {
       if (it.first == contextID) {
-        VZ_ERROR("Manager::createNewContext", "A context of ID ", contextID,
+        VT_ERROR("Manager::createNewContext", "A context of ID ", contextID,
                  " exists, error!");
       }
     }
@@ -137,7 +137,7 @@ class Manager {
   void allocMemory(uint64_t contextID, uint64_t kernelID, uint64_t* vaddr,
                    uint64_t size, BufferType BUF_TYPE) {
     if (size == 0 || vaddr == nullptr) {
-      VZ_ERROR("Manager::allocMemory", "vaddr or size not valid!");
+      VT_ERROR("Manager::allocMemory", "vaddr or size not valid!");
       return;
     }
 
@@ -145,7 +145,7 @@ class Manager {
     Item* currentItem = nullptr;
 
     if (m_cxt_mem_.find(contextID) == m_cxt_mem_.end()) {
-      VZ_ERROR("Manager::allocMemory", contextID, " is not valid");
+      VT_ERROR("Manager::allocMemory", contextID, " is not valid");
     }
 
     switch (BUF_TYPE) {
@@ -154,21 +154,21 @@ class Manager {
           *vaddr = RODATA_BASE;
           break;
         } else {
-          VZ_ERROR("Manager::allocMemory", "buffer size too large");
+          VT_ERROR("Manager::allocMemory", "buffer size too large");
         }
       case BufferType::READ_WRITE:
         if (size < RWDATA_BASE - RODATA_BASE) {
           *vaddr = RWDATA_BASE;
           break;
         } else {
-          VZ_ERROR("Manager::allocMemory", "buffer size too large");
+          VT_ERROR("Manager::allocMemory", "buffer size too large");
         }
       case BufferType::KERNEL_MEM:
         if (size < GLOBALMEM_SIZE / 2) {
           *vaddr = BUF_PARA_BASE;
           break;
         } else {
-          VZ_ERROR("Manager::allocMemory", "buffer size too large");
+          VT_ERROR("Manager::allocMemory", "buffer size too large");
         }
       default:
         break;
@@ -181,7 +181,7 @@ class Manager {
       if (!allocVaddr(&currentItem, vaddr, size, BUF_TYPE))
         insertNewItem(currentItem, contextID, kernelID, vaddr, size);
       else {
-        VZ_ERROR("Manager::allocMemory", "allocating virtual addr failed !");
+        VT_ERROR("Manager::allocMemory", "allocating virtual addr failed !");
       }
     }
   }
@@ -211,11 +211,11 @@ class Manager {
       tmp = tmp->succ_ctx_item;
     }
     if (!b_contextExist) {
-      VZ_ERROR("Manager", "context ID of [", contextID, "] not exist");
+      VT_ERROR("Manager", "context ID of [", contextID, "] not exist");
       return -1;
     }
     if (!b_vaddrExist) {
-      VZ_ERROR("Manager", "addr [", vaddr, "] not valid");
+      VT_ERROR("Manager", "addr [", vaddr, "] not valid");
 
       return -1;
     }
@@ -234,7 +234,7 @@ class Manager {
       tmp = tmp->succ_ctx_item;
     }
     if (!tmp) {
-      VZ_ERROR("Manager", "failed");
+      VT_ERROR("Manager", "failed");
       return -1;
     }
     return 0;
@@ -242,7 +242,7 @@ class Manager {
   int findVaByPa(uint64_t kernelID, uint64_t contextID, uint64_t* vaddr,
                  uint64_t* paddr) {
     if (m_cxt_mem_.find(contextID) == m_cxt_mem_.end()) {
-      VZ_ERROR("Manager", "Context of ID [", contextID, "] has not created");
+      VT_ERROR("Manager", "Context of ID [", contextID, "] has not created");
       return -1;
     }
     auto tmp = m_cxt_mem_.at(contextID);
@@ -295,7 +295,7 @@ class Manager {
             if (*vaddr + size <= RWDATA_BASE)
               break;
             else {
-              VZ_ERROR("Manager::allocMemory",
+              VT_ERROR("Manager::allocMemory",
                        "memory needs to allocate of size of 0x", std::hex, size,
                        "failed! No enough space!");
               return -1;
@@ -328,7 +328,7 @@ class Manager {
         }
         if ((*rootItem)->succ_ctx_item == nullptr &&
             (*vaddr + size > BUF_PARA_BASE)) {
-          VZ_ERROR("Manager::allocMemory",
+          VT_ERROR("Manager::allocMemory",
                    "memory needs to allocate of size of 0x", std::hex, size,
                    "failed! No enough space!");
           return -1;
@@ -357,7 +357,7 @@ class Manager {
         }
         if ((*rootItem)->succ_ctx_item == nullptr &&
             (*vaddr + size > BUF_PARA_BASE + GLOBALMEM_SIZE / 2)) {
-          VZ_ERROR("Manager::allocMemory",
+          VT_ERROR("Manager::allocMemory",
                    "memory needs to allocate of size of 0x", std::hex, size,
                    "failed! No enough space!");
           return -1;
@@ -397,7 +397,7 @@ class Driver {
 
   int create_device_mem(uint64_t taskID) {
     if (m_ctx_lst_.find(taskID) != m_ctx_lst_.end()) {
-      VZ_ERROR("vz::Device", "the taskID of ", taskID,
+      VT_ERROR("vz::Device", "the taskID of ", taskID,
                " has been created, check your input!");
       return -1;
     }
@@ -411,7 +411,7 @@ class Driver {
 
   int delete_device_mem(int taskID) {
     if (m_ctx_lst_.find(taskID) != m_ctx_lst_.end()) {
-      VZ_ERROR("vz::Device", "the taskID of ", taskID,
+      VT_ERROR("vz::Device", "the taskID of ", taskID,
                " has not been created, check your input!");
       return -1;
     }
@@ -423,26 +423,26 @@ class Driver {
                       uint64_t taskID, uint64_t kernelID) {
     auto it = m_ctx_lst_.find(taskID);
     if (size <= 0 || vaddr == nullptr || it == m_ctx_lst_.end()) {
-      VZ_ERROR("vz::Device", "alloc_local_mem failed");
+      VT_ERROR("vz::Device", "alloc_local_mem failed");
       return -1;
     }
     uint64_t paddr;
     m_addr_mng_.allocMemory(taskID, kernelID, vaddr, size,
                             BUF_TYPE);  // virtual mem
     if (!vaddr) {
-      VZ_ERROR("vz::Device",
+      VT_ERROR("vz::Device",
                "alloc_local_mem failed, can not alloc virtual mem.");
       return -1;
     }
     paddr = m_processor_.ram()->allocate(it->second.root, *vaddr,
                                          size);  // physical mem
     if (!paddr) {
-      VZ_ERROR("vz::Device",
+      VT_ERROR("vz::Device",
                "alloc_local_mem failed, can not alloc physical mem. ");
       return -1;
     }
     m_addr_mng_.attachPaddr(taskID, kernelID, *vaddr, paddr);
-    VZ_NOTE("vz::Driver", "allocating memory at vaddr of 0x", std::hex, *vaddr,
+    VT_NOTE("vz::Driver", "allocating memory at vaddr of 0x", std::hex, *vaddr,
             ", associated paddr of 0x", std::hex, paddr, ", size of ", std::dec,
             size, " bytes");
     return !*vaddr;
@@ -451,7 +451,7 @@ class Driver {
   int free_local_mem(uint64_t size, uint64_t* vaddr, uint64_t taskID,
                      uint64_t kernelID) {
     if (size <= 0 || vaddr == nullptr || !m_addr_mng_.findContextID(taskID)) {
-      VZ_ERROR("vz::Device", "free_local_mem failed");
+      VT_ERROR("vz::Device", "free_local_mem failed");
       return -1;
     }
     m_addr_mng_.releaseMemory(taskID, kernelID, vaddr, size);
@@ -460,7 +460,7 @@ class Driver {
     if (!flg) {
       return 0;
     }
-    VZ_ERROR("vz::Device", "upload free_local_mem");
+    VT_ERROR("vz::Device", "upload free_local_mem");
     return -1;
   }
 
@@ -468,7 +468,7 @@ class Driver {
              uint64_t taskID, uint64_t kernelID) {
     auto it = m_ctx_lst_.find(taskID);
     if (size <= 0 || src_addr == nullptr || it == m_ctx_lst_.end()) {
-      VZ_ERROR("vz::Device", "upload failed");
+      VT_ERROR("vz::Device", "upload failed");
       return -1;
     }
 
@@ -477,7 +477,7 @@ class Driver {
     if (!flg) {
       return 0;
     }
-    VZ_ERROR("vz::Device", "upload failed");
+    VT_ERROR("vz::Device", "upload failed");
     return -1;
   }
 
@@ -486,7 +486,7 @@ class Driver {
     auto it = m_ctx_lst_.find(taskID);
 
     if (size <= 0 || dst_addr == nullptr || it == m_ctx_lst_.end()) {
-      VZ_ERROR("vz::Device", "download failed");
+      VT_ERROR("vz::Device", "download failed");
       return -1;
     }
 
@@ -495,7 +495,7 @@ class Driver {
     if (!flg) {
       return 0;
     }
-    VZ_ERROR("vz::Device", "download failed");
+    VT_ERROR("vz::Device", "download failed");
     return -1;
   }
 
@@ -527,7 +527,7 @@ class Driver {
     devicePort->host_req_gds_baseaddr = 0;
 
     if (m_ctx_lst_.find(taskID) == m_ctx_lst_.end()) {
-      VZ_ERROR("vz::Device", "the taskID of ", taskID,
+      VT_ERROR("vz::Device", "the taskID of ", taskID,
                " has not been created, check your input!");
       return -1;
     }
@@ -622,7 +622,7 @@ class Driver {
         }
       }
       if (!block_legal) {
-        VZ_ERROR("vz::Driver", "wait failed");
+        VT_ERROR("vz::Driver", "wait failed");
         return -1;
       }
     }

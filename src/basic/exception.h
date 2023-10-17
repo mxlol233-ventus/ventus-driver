@@ -30,7 +30,7 @@
 #include "str.h"
 #include "tui.h"
 
-namespace vz::basic::exception {
+namespace vt::basic::exception {
 
 class Error : public std::exception {
  public:
@@ -52,27 +52,27 @@ std::string msg(const char* tag_name, const char* file_name, uint32_t line,
   std::string msg;
   if (std::strlen(tag_name) == 0) {
     msg = tui::color::Shell::colorize(
-        vz::basic::str::from("[File:", file_name,
+        vt::basic::str::from("[File:", file_name,
                              ","
                              "Line:",
                              line, ", Func: ", func_name, "]: "),
-        vz::basic::tui::color::Shell::fgreen());
+        vt::basic::tui::color::Shell::fgreen());
 
   } else {
     auto m0 = tui::color::Shell::colorize(
-        vz::basic::str::from(tag_name), vz::basic::tui::color::Shell::fblue());
+        vt::basic::str::from(tag_name), vt::basic::tui::color::Shell::fblue());
 
     auto m1 = tui::color::Shell::colorize(
-        vz::basic::str::from(", File:", file_name,
+        vt::basic::str::from(", File:", file_name,
                              ","
                              "Line:",
                              line, ", Func: ", func_name, "]: "),
-        vz::basic::tui::color::Shell::fgreen());
-    msg = tui::color::Shell::colorize(vz::basic::str::from("[Tag:", m0, m1),
-                                      vz::basic::tui::color::Shell::fgreen());
+        vt::basic::tui::color::Shell::fgreen());
+    msg = tui::color::Shell::colorize(vt::basic::str::from("[Tag:", m0, m1),
+                                      vt::basic::tui::color::Shell::fgreen());
   }
 
-  msg = vz::basic::str::from(msg, args...);
+  msg = vt::basic::str::from(msg, args...);
   return msg;
 }
 }  // namespace details
@@ -109,55 +109,55 @@ inline void do_assert(bool condition, const char* tag_name,
     throw Error(details::msg(tag_name, file_name, line, func_name, msg));
 }
 
-}  // namespace vz::basic::exception
+}  // namespace vt::basic::exception
 
 #define VZ_CHECK_ERROR(TagName, COND, ...)                            \
   if (!(COND)) {                                                      \
-    vz::basic::exception::fail(                                       \
+    vt::basic::exception::fail(                                       \
         TagName, __FILE__, __LINE__, __func__,                        \
-        vz::basic::tui::color::Shell::colorize(                       \
-            " [`" #COND "`] ", vz::basic::tui::color::Shell::fred()), \
+        vt::basic::tui::color::Shell::colorize(                       \
+            " [`" #COND "`] ", vt::basic::tui::color::Shell::fred()), \
         "not true. ", ##__VA_ARGS__);                                 \
   }
 
 #define VZ_CHECK_WARNING(TagName, COND, ...)                          \
   if (!(COND)) {                                                      \
-    vz::basic::exception::warning(                                    \
-        vz::basic::tui::color::Shell::colorize(                       \
+    vt::basic::exception::warning(                                    \
+        vt::basic::tui::color::Shell::colorize(                       \
             TagName, __FILE__, __LINE__, __func__, " [`" #COND "`] ", \
-            vz::basic::tui::color::Shell::fyellow()),                 \
+            vt::basic::tui::color::Shell::fyellow()),                 \
         "not true. ", ##__VA_ARGS__);                                 \
   }
 
-#define VZ_ERROR(TagName, ...)                                   \
+#define VT_ERROR(TagName, ...)                                   \
   {                                                              \
-    vz::basic::exception::fail(                                  \
+    vt::basic::exception::fail(                                  \
         TagName, __FILE__, __LINE__, __func__,                   \
-        vz::basic::tui::color::Shell::colorize(                  \
-            " [ERROR]: ", vz::basic::tui::color::Shell::fred()), \
+        vt::basic::tui::color::Shell::colorize(                  \
+            " [ERROR]: ", vt::basic::tui::color::Shell::fred()), \
         ##__VA_ARGS__);                                          \
   }
 
-#define VZ_WARNING(TagName, ...)                                    \
+#define VT_WARNING(TagName, ...)                                    \
   {                                                                 \
-    vz::basic::exception::warning(                                  \
+    vt::basic::exception::warning(                                  \
         TagName, __FILE__, __LINE__, __func__,                      \
-        vz::basic::tui::color::Shell::colorize(                     \
-            " [ERROR]: ", vz::basic::tui::color::Shell::fyellow()), \
+        vt::basic::tui::color::Shell::colorize(                     \
+            " [ERROR]: ", vt::basic::tui::color::Shell::fyellow()), \
         ##__VA_ARGS__);                                             \
   }
 
-#define VZ_NOTE(TagName, ...)                                         \
+#define VT_NOTE(TagName, ...)                                         \
   {                                                                   \
-    vz::basic::exception::note(TagName, __FILE__, __LINE__, __func__, \
+    vt::basic::exception::note(TagName, __FILE__, __LINE__, __func__, \
                                " [NOTE]: ", ##__VA_ARGS__);           \
   }
 
-#define unreachable(TagName) VZ_ERROR(TagName, "unreachable")
+#define unreachable(TagName) VT_ERROR(TagName, "unreachable")
 
-#define vz_assert(TagName, COND)                                          \
-  vz::basic::exception::do_assert((COND), TagName, __FILE__, __LINE__,    \
+#define vt_assert(TagName, COND)                                          \
+  vt::basic::exception::do_assert((COND), TagName, __FILE__, __LINE__,    \
                                   __func__,                               \
-                                  vz::basic::tui::color::Shell::colorize( \
+                                  vt::basic::tui::color::Shell::colorize( \
                                       " [ASSERT FAILED]: [`" #COND "`] ", \
-                                      vz::basic::tui::color::Shell::fred()));
+                                      vt::basic::tui::color::Shell::fred()));

@@ -25,7 +25,7 @@
 
 #include <sstream>
 
-namespace vz::basic {
+namespace vt::basic {
 namespace tui {
 namespace color {
 enum Code {
@@ -73,4 +73,4 @@ inline std::ostream& operator<<(std::ostream& os,
 
 }  // namespace str::details
 
-}  // namespace vz::basic
+}  // namespace vt::basic

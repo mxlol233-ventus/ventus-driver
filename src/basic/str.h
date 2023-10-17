@@ -28,7 +28,7 @@
 #include <string>
 #include <vector>
 
-namespace vz::basic::str {
+namespace vt::basic::str {
 
 namespace details {
 
@@ -129,4 +129,4 @@ inline decltype(auto) from(const Args&... args) {
   return details::Warper<typename details::Canonicalize<Args>::type...>::call(
       args...);
 }
-}  // namespace vz::basic::str
+}  // namespace vt::basic::str
